@@ -22,8 +22,14 @@ Changes:
      render_controllers/holoprint_mpfix.armor.render_controllers.json (no glint/trims/dye).
   3. manifest.json: PATCH_REVISION is added to the patch version, so it imports as an upgrade,
      and the pack name becomes "<file name minus .holoprint.mcpack> (MP fix <version>)".
+     HoloPrint's authors, license (CC BY-NC-SA 4.0) and links are kept; the pack is marked as
+     modified (metadata.generated_with and a pack settings entry linking to this project), as
+     the license's attribution terms require.
 
 Armor stand pose / held item / punching are server-synced and intentionally left shared.
+
+Not affiliated with HoloPrint (https://github.com/SuperLlama88888/holoprint), whose packs this
+modifies; patched packs remain under HoloPrint's CC BY-NC-SA 4.0 license.
 """
 import json
 import os
@@ -44,9 +50,12 @@ PLAYER_ENTITY_PATH = "entity/holoprint_mpfix.player.entity.json"
 ARMOR_RC_PATH = "render_controllers/holoprint_mpfix.armor.render_controllers.json"
 MANIFEST_PATH = "manifest.json"
 NAME_SUFFIX = "MP fix"
+PROJECT_NAME = "holoprint-multiplayer-fix"
+PROJECT_URL = "https://github.com/iigeshii/holoprint-multiplayer-fix"
 # Added to the pack's patch version. Increase whenever the patch changes: Minecraft ignores an
-# import whose version isn't higher than the one already installed.
-PATCH_REVISION = 8
+# import whose version isn't higher than the one already installed. Also the patcher's version
+# in the pack's metadata ("1.0.<PATCH_REVISION>").
+PATCH_REVISION = 9
 
 THIRD_PERSON_RC = "controller.render.player.third_person"
 GUARDS = {
@@ -166,6 +175,15 @@ def patch_manifest(manifest, pack_name):
 	# Minecraft's pack list doesn't show versions, so put it in the name
 	version = ".".join(map(str, manifest["header"]["version"]))
 	manifest["header"]["name"] = f"{pack_name} ({NAME_SUFFIX} {version})"
+	# Keep HoloPrint's authors, license and links; mark the pack as modified (CC BY-NC-SA attribution)
+	metadata = manifest.setdefault("metadata", {})
+	metadata.setdefault("generated_with", {})[PROJECT_NAME.replace("-", "_")] = [f"1.0.{PATCH_REVISION}"]
+	manifest.setdefault("settings", []).append({
+		"type": "input",
+		"text": f"Modified by §u{PROJECT_NAME}§r (unofficial, not by HoloPrint):",
+		"default": PROJECT_URL,
+		"name": "multiplayer_fix",
+	})
 	return manifest["header"]
 
 def dump(data):
