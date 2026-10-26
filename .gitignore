@@ -1,0 +1,4 @@
+# Packs (inputs and patched outputs) and unpacked copies of them
+*.mcpack
+in/*/
+out/*/
